@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace Tests
 {
-    public class Tests
+    public class JsonPlacehoderApiTests
     {
         string endpoint;
 
@@ -150,6 +150,20 @@ namespace Tests
 
             Assert.AreEqual(5, output.Count);
 
+            var postId = output[0]["postId"];
+            var id = output[0]["id"];
+            var name = output[0]["name"];
+            var email = output[0]["email"];
+            var body = output[0]["body"];
+
+
+            Assert.AreEqual("1", postId);
+            Assert.AreEqual("1", id);
+            Assert.AreEqual("id labore ex et quam laborum", name);
+            Assert.AreEqual("Eliseo@gardner.biz", email);
+            Assert.AreEqual("laudantium enim quasi est quidem magnam voluptate ipsam eos\ntempora quo necessitatibus\ndolor quam autem quasi\nreiciendis et nam sapiente accusantium", body);
+
+
         }
 
         [Test]
@@ -164,14 +178,20 @@ namespace Tests
             var request = new RestRequest("posts/2", Method.GET);
 
             var response = client.Execute(request);
-            HttpStatusCode statusCode = response.StatusCode; 
-            Assert.AreEqual(HttpStatusCode.OK, statusCode);
-            var deserialiser = new JsonDeserializer();
+            HttpStatusCode statusCode = response.StatusCode;
+            string contentType = response.ContentType;
 
+
+            Assert.AreEqual(HttpStatusCode.OK, statusCode);
+            Assert.AreEqual("application/json; charset=utf-8", contentType);
+
+            var deserialiser = new JsonDeserializer();
             var output = deserialiser.Deserialize<Dictionary<string, string>>(response);
 
             stopwatch.Stop();
 
+
+            //if the response is more than 5 seconds we should fail, as this is way too long for any API response for a single post
             if(stopwatch.Elapsed.Seconds > 5)
             {
                 Assert.Fail("Response took more than 5 seconds");
@@ -253,6 +273,24 @@ namespace Tests
 
         }
 
+        [Test]
+        public void DeleteNonExistingPostsHttpsRequestResponseOk()
+        {
+            var client = new RestClient(endpoint);
+
+            var request = new RestRequest("posts/1000", Method.DELETE);
+
+            var response = client.Execute(request);
+            HttpStatusCode statusCode = response.StatusCode;
+
+            
+            //This returns an OK and there is no way of telling if the post has been deleted or not
+            Assert.AreEqual(HttpStatusCode.OK, statusCode);
+
+
+
+        }
+
 
 
         //HTTP (not HTTPS) test here
@@ -287,13 +325,13 @@ namespace Tests
 
 
 
+        /// 
+        /// NEGATIVE TESTS
+        /// 
 
 
 
-
-
-
-        //Negative test, return not found
+        // Negative test, return not found
         [Test]
         public void PostHttpsRequestResponseNotFound()
         {
@@ -306,6 +344,61 @@ namespace Tests
             Assert.AreEqual(HttpStatusCode.NotFound, statusCode);
 
         }
+
+        [Test]
+        public void GetPostWitIncorrectRequestHttpsRequestResponseNotFound()
+        {
+            var client = new RestClient(endpoint);
+
+            var request = new RestRequest("post/1", Method.GET);
+
+            var response = client.Execute(request);
+            HttpStatusCode statusCode = response.StatusCode;
+            Assert.AreEqual(HttpStatusCode.NotFound, statusCode);
+
+        }
+
+        [Test]
+        public void OptionsPostHttpsRequestResponseNotFound()
+        {
+            var client = new RestClient(endpoint);
+
+            var request = new RestRequest("posts/1", Method.OPTIONS);
+
+            var response = client.Execute(request);
+            HttpStatusCode statusCode = response.StatusCode;
+
+            //HTTP Method OPTIONS is not supported should return nocontent
+            Assert.AreEqual(HttpStatusCode.NoContent, statusCode);
+
+        }
+
+
+        [Test]
+        public void HeadPostsHttpsRequestResponseOk()
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+
+            var client = new RestClient(endpoint);
+
+            var request = new RestRequest("posts/2", Method.HEAD);
+
+            var response = client.Execute(request);
+            HttpStatusCode statusCode = response.StatusCode;
+            Assert.AreEqual(HttpStatusCode.OK, statusCode);
+            var deserialiser = new JsonDeserializer();
+
+
+            //Head returns no content
+            Assert.AreEqual("", response.Content);
+
+        }
+
+
+
+        //Test Headers
 
 
 

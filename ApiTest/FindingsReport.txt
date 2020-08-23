@@ -13,5 +13,9 @@ RestSharp (106.11.4)
 
 
 
---the dependencies of current solution 
 --further ways to improve: specflow?
+
+
+--no authentication 
+--allows http calls that can reduce security
+--deleting/updating a posts or comment does not return a valid response if it is successful or not

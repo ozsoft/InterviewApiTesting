@@ -1,5 +1,17 @@
 ﻿
 
 This is the document to outline the findings from testing JSON Placeholder API
+Developed in .NET Core 2.1, Console application solution
 
---the dependencies 
+Language: C#
+
+Dependencies: 
+Microsoft.NET.Test.Sdk (15.8.0)
+NUnit (3.10.1)
+NUnit3TestAdapter (3.10.0)
+RestSharp (106.11.4)
+
+
+
+--the dependencies of current solution 
+--further ways to improve: specflow?

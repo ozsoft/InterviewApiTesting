@@ -10,24 +10,31 @@ namespace ApiTest
 {
     public class ApiHelper
     {
+        public Uri baseUrl;
+
+        public ApiHelper(Uri url)
+        {
+            this.baseUrl = url;
+
+
+        }
         public RestClient restClient;
         public RestRequest restRequest;
-        public string baseUrl = "https://jsonplaceholder.typicode.com/";
 
 
         public Uri SetUrl(string endpoint)
         {
-            string url = Path.Combine(baseUrl, endpoint);
+            string url = Path.Combine(baseUrl.ToString(), endpoint);
             Uri myUri = new Uri(url);
 
             return myUri;
         }
 
-        public IRestResponse CreateGetRequest(Uri url)
+        public IRestResponse CreateRequest(Uri url, RestSharp.Method method)
         {
             var client = new RestClient(url);
 
-            var request = new RestRequest(Method.GET);
+            var request = new RestRequest(method);
             var response = client.Execute(request);
 
             return response;

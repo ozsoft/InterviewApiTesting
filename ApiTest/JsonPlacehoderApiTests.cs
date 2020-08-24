@@ -12,7 +12,7 @@ namespace Tests
     public class JsonPlacehoderApiTests
     {
         string endpoint;
-        ApiHelper api = new ApiHelper();
+        ApiHelper api = new ApiHelper(new Uri("https://jsonplaceholder.typicode.com/"));
 
 
         [SetUp]
@@ -20,7 +20,6 @@ namespace Tests
         {
 
 
-            endpoint = "https://jsonplaceholder.typicode.com/";
 
         }
 
@@ -34,7 +33,7 @@ namespace Tests
             Uri url = api.SetUrl("posts");
 
             //get response back by calling API as a GET request
-            var response = api.CreateGetRequest(url);
+            var response = api.CreateRequest(url, Method.GET);
 
             //serialise the response content and put into a List of dictionary
             var output = api.SerialiseResponseToListOfDict(response);
@@ -53,35 +52,41 @@ namespace Tests
         [Test]
         public void GetAllCommentsHttpsRequestResponseOk()
         {
-            var client = new RestClient(endpoint);
+            //set url using API helper
+            Uri url = api.SetUrl("comments");
 
-            var request = new RestRequest("comments", Method.GET);
+            //get response back by calling API as a GET request
+            var response = api.CreateRequest(url, Method.GET);
 
-            var response = client.Execute(request);
-            HttpStatusCode statusCode = response.StatusCode;
-            Assert.AreEqual(HttpStatusCode.OK, statusCode);
-            var deserialiser = new JsonDeserializer();
+            //serialise the response content and put into a List of dictionary
+            var output = api.SerialiseResponseToListOfDict(response);
 
-            var output = deserialiser.Deserialize<List<Dictionary<string, string>>>(response);
 
+            //Assert that expected http code matches the response http code 
+            api.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);
+
+
+            //assert that the size of output from response is as expected
             Assert.AreEqual(500, output.Count);
-
 
         }
 
         [Test]
         public void GetCommentsByIdHttpsRequestResponseOk()
         {
-            var client = new RestClient(endpoint);
 
-            var request = new RestRequest("comments/1", Method.GET);
+            //set url using API helper
+            Uri url = api.SetUrl("comments/1");
 
-            var response = client.Execute(request);
-            HttpStatusCode statusCode = response.StatusCode;
-            Assert.AreEqual(HttpStatusCode.OK, statusCode);
-            var deserialiser = new JsonDeserializer();
+            //get response back by calling API as a GET request
+            var response = api.CreateRequest(url, Method.GET);
 
-            var output = deserialiser.Deserialize<List<Dictionary<string, string>>>(response);
+            //serialise the response content and put into a List of dictionary
+            var output = api.SerialiseResponseToListOfDict(response);
+
+
+            //Assert that expected http code matches the response http code 
+            api.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);
 
             var postId = output[0]["postId"];
             var id = output[0]["id"];
@@ -107,16 +112,22 @@ namespace Tests
         [Test]
         public void GetPostsByUserHttpsRequestResponseOk()
         {
-            var client = new RestClient(endpoint);
 
-            var request = new RestRequest("posts?userId=1", Method.GET);
+            //set url using API helper
+            Uri url = api.SetUrl("posts?userId=1");
 
-            var response = client.Execute(request);
-            HttpStatusCode statusCode = response.StatusCode;
-            Assert.AreEqual(HttpStatusCode.OK, statusCode);
-            var deserialiser = new JsonDeserializer();
+            //get response back by calling API as a GET request
+            var response = api.CreateRequest(url, Method.GET);
 
-            var output = deserialiser.Deserialize<List<Dictionary<string, string>>>(response);
+            //serialise the response content and put into a List of dictionary
+            var output = api.SerialiseResponseToListOfDict(response);
+
+
+            //Assert that expected http code matches the response http code 
+            api.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);
+
+
+            //assert that the size of output from response is as expected
 
             Assert.AreEqual(10, output.Count);
 
@@ -126,16 +137,20 @@ namespace Tests
         [Test]
         public void GetCommentsByPostIdHttpsRequestResponseOk()
         {
-            var client = new RestClient(endpoint);
 
-            var request = new RestRequest("/comments?postId=1", Method.GET);
+            //set url using API helper
+            Uri url = api.SetUrl("comments?postId=1");
 
-            var response = client.Execute(request);
-            HttpStatusCode statusCode = response.StatusCode;
-            Assert.AreEqual(statusCode, HttpStatusCode.OK);
-            var deserialiser = new JsonDeserializer();
+            //get response back by calling API as a GET request
+            var response = api.CreateRequest(url, Method.GET);
 
-            var output = deserialiser.Deserialize<List<Dictionary<string, string>>>(response);
+            //serialise the response content and put into a List of dictionary
+            var output = api.SerialiseResponseToListOfDict(response);
+
+
+            //Assert that expected http code matches the response http code 
+            api.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);
+
 
             Assert.AreEqual(5, output.Count);
 
@@ -146,22 +161,19 @@ namespace Tests
         [Test]
         public void GetCommentsByPostSecondUrlIdHttpsRequestResponseOk()
         {
-            //create a simple RestSharp client with an endpoint and a GET request 
-            var client = new RestClient(endpoint);
-            var request = new RestRequest("posts/1/comments", Method.GET);
 
-            //execute the request on client 
-            var response = client.Execute(request);
+            //set url using API helper
+            Uri url = api.SetUrl("posts/1/comments");
 
-            //Get the status code from the request
-            HttpStatusCode statusCode = response.StatusCode;
+            //get response back by calling API as a GET request
+            var response = api.CreateRequest(url, Method.GET);
 
-            //Assert the statuscode for the call returned OK/200
-            Assert.AreEqual(statusCode, HttpStatusCode.OK);
+            //serialise the response content and put into a List of dictionary
+            var output = api.SerialiseResponseToListOfDict(response);
 
-            //deserialise the response and put the results into a List of Dictionary of string key and string value
-            var deserialiser = new JsonDeserializer();
-            var output = deserialiser.Deserialize<List<Dictionary<string, string>>>(response);
+
+            //Assert that expected http code matches the response http code 
+            api.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);
 
 
             //Confirm the size of the results from response is 5 by using the lists size
@@ -187,26 +199,26 @@ namespace Tests
         }
 
         [Test]
-        public void GetPostsHttpsRequestResponseOk()
+        public void GetPostsHttpsRequestResponseOkAndTestPerformanceOfApi()
         {
+            //start a stopwatch to time the api call
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
 
-            var client = new RestClient(endpoint);
+            //set url using API helper
+            Uri url = api.SetUrl("posts/2");
 
-            var request = new RestRequest("posts/2", Method.GET);
+            //get response back by calling API as a GET request
+            var response = api.CreateRequest(url, Method.GET);
 
-            var response = client.Execute(request);
-            HttpStatusCode statusCode = response.StatusCode;
-            string contentType = response.ContentType;
+            //serialise the response content and put into a List of dictionary
+            var output = api.SerialiseResponseToDictionary(response);
 
 
-            Assert.AreEqual(HttpStatusCode.OK, statusCode);
-            Assert.AreEqual("application/json; charset=utf-8", contentType);
+            //Assert that expected http code matches the response http code 
+            api.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);
 
-            var deserialiser = new JsonDeserializer();
-            var output = deserialiser.Deserialize<Dictionary<string, string>>(response);
 
             stopwatch.Stop();
 
@@ -216,8 +228,6 @@ namespace Tests
             {
                 Assert.Fail("Response took more than 5 seconds");
             }
-
-
 
 
             var userId = output["userId"];
@@ -236,14 +246,19 @@ namespace Tests
         [Test]
         public void PostPostsHttpsRequestResponseOk()
         {
-            var client = new RestClient(endpoint);
 
-            var request = new RestRequest("posts", Method.POST);
+            //set url using API helper
+            Uri url = api.SetUrl("posts/");
 
-            var response = client.Execute(request);
-            HttpStatusCode statusCode = response.StatusCode;
-            Assert.AreEqual(HttpStatusCode.Created, statusCode);
+            //get response back by calling API as a GET request
+            var response = api.CreateRequest(url, Method.POST);
 
+            //serialise the response content and put into a List of dictionary
+            var output = api.SerialiseResponseToListOfDict(response);
+
+
+            //Assert that expected http code matches the response http code 
+            api.CheckHttpCodeResponse(HttpStatusCode.Created, response.StatusCode);
 
 
         }
@@ -251,13 +266,21 @@ namespace Tests
         [Test]
         public void PutPostsHttpsRequestResponseOk()
         {
-            var client = new RestClient(endpoint);
 
-            var request = new RestRequest("posts/1", Method.PUT);
 
-            var response = client.Execute(request);
-            HttpStatusCode statusCode = response.StatusCode;
-            Assert.AreEqual(HttpStatusCode.OK, statusCode);
+
+            //set url using API helper
+            Uri url = api.SetUrl("posts/1");
+
+            //get response back by calling API as a GET request
+            var response = api.CreateRequest(url, Method.PUT);
+
+            //serialise the response content and put into a List of dictionary
+            var output = api.SerialiseResponseToListOfDict(response);
+
+
+            //Assert that expected http code matches the response http code 
+            api.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);
 
 
 
@@ -266,14 +289,18 @@ namespace Tests
         [Test]
         public void PatchPostsHttpsRequestResponseOk()
         {
-            var client = new RestClient(endpoint);
+            //set url using API helper
+            Uri url = api.SetUrl("posts/1");
 
-            var request = new RestRequest("posts/1", Method.PATCH);
+            //get response back by calling API as a GET request
+            var response = api.CreateRequest(url, Method.PATCH);
 
-            var response = client.Execute(request);
-            HttpStatusCode statusCode = response.StatusCode;
-            Assert.AreEqual(HttpStatusCode.OK, statusCode);
+            //serialise the response content and put into a List of dictionary
+            var output = api.SerialiseResponseToListOfDict(response);
 
+
+            //Assert that expected http code matches the response http code 
+            api.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);
 
 
         }
@@ -281,32 +308,38 @@ namespace Tests
         [Test]
         public void DeletePostsHttpsRequestResponseOk()
         {
-            var client = new RestClient(endpoint);
 
-            var request = new RestRequest("posts/1", Method.DELETE);
+            //set url using API helper
+            Uri url = api.SetUrl("posts/1");
 
-            var response = client.Execute(request);
-            HttpStatusCode statusCode = response.StatusCode;
-            Assert.AreEqual(HttpStatusCode.OK, statusCode);
+            //get response back by calling API as a GET request
+            var response = api.CreateRequest(url, Method.DELETE);
+
+            //serialise the response content and put into a List of dictionary
+            var output = api.SerialiseResponseToListOfDict(response);
 
 
+            //Assert that expected http code matches the response http code 
+            api.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);
 
         }
 
         [Test]
         public void DeleteNonExistingPostsHttpsRequestResponseOk()
         {
-            var client = new RestClient(endpoint);
 
-            var request = new RestRequest("posts/1000", Method.DELETE);
+            //set url using API helper
+            Uri url = api.SetUrl("posts/1000");
 
-            var response = client.Execute(request);
-            HttpStatusCode statusCode = response.StatusCode;
+            //get response back by calling API as a GET request
+            var response = api.CreateRequest(url, Method.DELETE);
+
+            //serialise the response content and put into a List of dictionary
+            var output = api.SerialiseResponseToListOfDict(response);
 
 
-            //This returns an OK and there is no way of telling if the post has been deleted or not
-            Assert.AreEqual(HttpStatusCode.OK, statusCode);
-
+            //Assert that expected http code matches the response http code 
+            api.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);
 
 
         }
@@ -317,17 +350,23 @@ namespace Tests
         [Test]
         public void GetPostHttpRequestResponseOk()
         {
-            var client = new RestClient("http://jsonplaceholder.typicode.com/");
 
-            var request = new RestRequest("posts/2", Method.GET);
+            ApiHelper apiHttp = new ApiHelper(new Uri("http://jsonplaceholder.typicode.com/"));
 
-            var response = client.Execute(request);
-            HttpStatusCode statusCode = response.StatusCode;
-            Assert.AreEqual(statusCode, HttpStatusCode.OK);
-            var deserialiser = new JsonDeserializer();
+            //set url using API helper
+            Uri url = apiHttp.SetUrl("posts/2");
 
-            var output = deserialiser.Deserialize<Dictionary<string, string>>(response);
+            //get response back by calling API as a GET request
+            var response = apiHttp.CreateRequest(url, Method.GET);
 
+            //serialise the response content and put into a List of dictionary
+            var output = apiHttp.SerialiseResponseToDictionary(response);
+
+
+            //Assert that expected http code matches the response http code 
+            apiHttp.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);
+
+            //check the posts/2 returned values
             var userId = output["userId"];
             var id = output["id"];
             var title = output["title"];
@@ -353,72 +392,71 @@ namespace Tests
 
         // Negative test, return not found
         [Test]
-        public void PostHttpsRequestResponseNotFound()
+        public void GetPostHttpsRequestResponseNotFound()
         {
-            var client = new RestClient(endpoint);
 
-            var request = new RestRequest("posts/-1", Method.GET);
+            //set url using API helper
+            Uri url = api.SetUrl("posts/-1");
 
-            var response = client.Execute(request);
-            HttpStatusCode statusCode = response.StatusCode;
-            Assert.AreEqual(HttpStatusCode.NotFound, statusCode);
+            //get response back by calling API as a GET request
+            var response = api.CreateRequest(url, Method.GET);
+
+            //Assert that expected http code matches the response http code 
+            api.CheckHttpCodeResponse(HttpStatusCode.NotFound, response.StatusCode);
 
         }
 
         [Test]
         public void GetPostWitIncorrectRequestHttpsRequestResponseNotFound()
         {
-            var client = new RestClient(endpoint);
+            //incorrect url
+            Uri url = api.SetUrl("pos/1");
 
-            var request = new RestRequest("post/1", Method.GET);
+            //get response back by calling API as a GET request
+            var response = api.CreateRequest(url, Method.GET);
 
-            var response = client.Execute(request);
-            HttpStatusCode statusCode = response.StatusCode;
-            Assert.AreEqual(HttpStatusCode.NotFound, statusCode);
+            //Assert that expected http code matches the response http code 
+            api.CheckHttpCodeResponse(HttpStatusCode.NotFound, response.StatusCode);
 
         }
 
         [Test]
         public void OptionsPostHttpsRequestResponseNotFound()
         {
-            var client = new RestClient(endpoint);
 
-            var request = new RestRequest("posts/1", Method.OPTIONS);
+            Uri url = api.SetUrl("posts/1");
 
-            var response = client.Execute(request);
-            HttpStatusCode statusCode = response.StatusCode;
+            //get response back by calling API as a GET request
+            var response = api.CreateRequest(url, Method.OPTIONS);
 
-            //HTTP Method OPTIONS is not supported should return nocontent
-            Assert.AreEqual(HttpStatusCode.NoContent, statusCode);
-
+            //Assert that expected http code matches the response http code 
+            api.CheckHttpCodeResponse(HttpStatusCode.NoContent, response.StatusCode);
         }
 
 
         [Test]
         public void HeadPostsHttpsRequestResponseOk()
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
 
 
-            var client = new RestClient(endpoint);
+            //set url using API helper
+            Uri url = api.SetUrl("posts/2");
 
-            var request = new RestRequest("posts/2", Method.HEAD);
+            //get response back by calling API as a GET request
+            var response = api.CreateRequest(url, Method.HEAD);
 
-            var response = client.Execute(request);
-            HttpStatusCode statusCode = response.StatusCode;
-            Assert.AreEqual(HttpStatusCode.OK, statusCode);
-            var deserialiser = new JsonDeserializer();
+            //Assert that expected http code matches the response http code 
+            api.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);
 
 
             //Head returns no content
             Assert.AreEqual("", response.Content);
 
+
         }
 
 
 
-        //Test Headers
 
 
 

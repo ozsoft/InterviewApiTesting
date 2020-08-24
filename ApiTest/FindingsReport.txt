@@ -1,9 +1,11 @@
 ﻿
 
 This is the document to outline the findings from testing JSON Placeholder API
-Developed in .NET Core 2.1, Console application solution
 
-Language: C#
+Framework: 
+C# Language, 
+Developed in .NET Core 2.1, 
+Console application solution
 
 Dependencies: 
 Microsoft.NET.Test.Sdk (15.8.0)
@@ -13,7 +15,10 @@ RestSharp (106.11.4)
 
 
 
---further ways to improve: specflow?
+--further ways to improve: 
+	SpecFlow and BDD addition
+	RestAPI helper class
+	
 
 
 --no authentication 

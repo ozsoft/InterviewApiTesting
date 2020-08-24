@@ -137,19 +137,29 @@ namespace Tests
         [Test]
         public void GetCommentsByPostSecondUrlIdHttpsRequestResponseOk()
         {
+            //create a simple RestSharp client with an endpoint and a GET request 
             var client = new RestClient(endpoint);
-
             var request = new RestRequest("posts/1/comments", Method.GET);
 
+            //execute the request on client 
             var response = client.Execute(request);
-            HttpStatusCode statusCode = response.StatusCode;
-            Assert.AreEqual(statusCode, HttpStatusCode.OK);
-            var deserialiser = new JsonDeserializer();
 
+            //Get the status code from the request
+            HttpStatusCode statusCode = response.StatusCode;
+
+            //Assert the statuscode for the call returned OK/200
+            Assert.AreEqual(statusCode, HttpStatusCode.OK);
+
+            //deserialise the response and put the results into a List of Dictionary of string key and string value
+            var deserialiser = new JsonDeserializer();
             var output = deserialiser.Deserialize<List<Dictionary<string, string>>>(response);
 
+
+            //Confirm the size of the results from response is 5 by using the lists size
             Assert.AreEqual(5, output.Count);
 
+
+            //check the first results content i.e. postid=1 
             var postId = output[0]["postId"];
             var id = output[0]["id"];
             var name = output[0]["name"];
@@ -157,6 +167,7 @@ namespace Tests
             var body = output[0]["body"];
 
 
+            //Asserts of the content of the first result
             Assert.AreEqual("1", postId);
             Assert.AreEqual("1", id);
             Assert.AreEqual("id labore ex et quam laborum", name);

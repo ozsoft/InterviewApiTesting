@@ -5,37 +5,46 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using RestSharp.Serialization.Json;
 using System.Diagnostics;
+using ApiTest;
 
 namespace Tests
 {
     public class JsonPlacehoderApiTests
     {
         string endpoint;
+        ApiHelper api = new ApiHelper();
+
 
         [SetUp]
         public void Setup()
         {
 
+
             endpoint = "https://jsonplaceholder.typicode.com/";
 
         }
+
 
         //Happy paths, positive tests
 
         [Test]
         public void GetAllPostsHttpsRequestResponseOk()
         {
-            var client = new RestClient(endpoint);
+            //set url using API helper
+            Uri url = api.SetUrl("posts");
 
-            var request = new RestRequest("posts", Method.GET);
+            //get response back by calling API as a GET request
+            var response = api.CreateGetRequest(url);
 
-            var response = client.Execute(request);
-            HttpStatusCode statusCode = response.StatusCode;
-            Assert.AreEqual(HttpStatusCode.OK, statusCode);
-            var deserialiser = new JsonDeserializer();
+            //serialise the response content and put into a List of dictionary
+            var output = api.SerialiseResponseToListOfDict(response);
 
-            var output = deserialiser.Deserialize<List<Dictionary<string, string>>>(response);
 
+            //Assert that expected http code matches the response http code 
+            api.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);
+
+
+            //assert that the size of output from response is as expected
             Assert.AreEqual(100, output.Count);
 
 
@@ -133,7 +142,7 @@ namespace Tests
         }
 
 
-        
+
         [Test]
         public void GetCommentsByPostSecondUrlIdHttpsRequestResponseOk()
         {
@@ -203,7 +212,7 @@ namespace Tests
 
 
             //if the response is more than 5 seconds we should fail, as this is way too long for any API response for a single post
-            if(stopwatch.Elapsed.Seconds > 5)
+            if (stopwatch.Elapsed.Seconds > 5)
             {
                 Assert.Fail("Response took more than 5 seconds");
             }
@@ -234,7 +243,7 @@ namespace Tests
             var response = client.Execute(request);
             HttpStatusCode statusCode = response.StatusCode;
             Assert.AreEqual(HttpStatusCode.Created, statusCode);
-            
+
 
 
         }
@@ -294,7 +303,7 @@ namespace Tests
             var response = client.Execute(request);
             HttpStatusCode statusCode = response.StatusCode;
 
-            
+
             //This returns an OK and there is no way of telling if the post has been deleted or not
             Assert.AreEqual(HttpStatusCode.OK, statusCode);
 

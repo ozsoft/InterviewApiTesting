@@ -56,7 +56,9 @@ but this may need a load and stress test to make sure we can accept the API in t
 
 -It allows http calls and this can be considered as a security flaw.
 
--Delete or Updating a post or comment does not return a valid response if it is successful or not, so we cannot be sure if the action is processed. 
+-DELETE a post or comment returns a 200 but no confirmation in the body
+
+-POST a comment or post returns the id of the newly created post
 
 Further findings:
 -Response is a wellformed JSON object.
@@ -64,11 +66,14 @@ Further findings:
 -Response structure is according to data model on the JSON placeholder website ie. field names types are as expected although I had to convert all to a string to process
 -Values were returned as expected from the JSON Placeholder website.
 -There were no State changes for GET requests.
--HTTP headers are as expected from the API content-type, connection, cache control etc
-
+-Delete of posts and comments with an incorrect id (does not exist i.e. 10000) returned with an OK response
+-No Specific requirements on the headers of the API but it looks well formed
+-Date returned from Header was an hour behind from my system date time
+-Content type returned correctly 'application/json; charset=utf-8'
+-The returned cookie is not secured
+-No information is leaked with Header X-Powered-By
 
 
 -----FUTURE IMPROVEMENTS-----
 	Add SpecFlow on top of the RestSharp to get non-technical people involved in adding tests.
 	Approve the scope of API to cover other resources i.e. albums, photos, todos, users. This was not in scope of testing
-	

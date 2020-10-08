@@ -11,10 +11,12 @@ namespace Tests
 {
     public class JsonPlacehoderApiTests
     {
-        string endpoint;
+        //this will create an ApiHelper so we can utilise in most of the test below
         ApiHelper api = new ApiHelper(new Uri("https://jsonplaceholder.typicode.com/"));
 
 
+        //Unit setup method, not used for the moment, but will become more useful as the framework matures
+        //we can insert anything we need processing prior to any tests been run here
         [SetUp]
         public void Setup()
         {
@@ -29,7 +31,7 @@ namespace Tests
         [Test]
         public void GetAllPostsHttpsRequestResponseOk()
         {
-            //set url using API helper
+            //set url using API helper, will use prefix of url above and the below postfix and concatenate the full URL to call
             Uri url = api.SetUrl("posts");
 
             //get response back by calling API as a GET request
@@ -45,6 +47,7 @@ namespace Tests
             Assert.AreEqual(200, responseInt);
 
             //assert that the size of output from response is as expected
+            //this is a basic tests that the returned number of responses are matching what we expect
             Assert.AreEqual(100, output.Count);
 
 
@@ -89,11 +92,21 @@ namespace Tests
             //Assert that expected http code matches the response http code 
             api.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);
 
+<<<<<<< HEAD:ApiTest/Tests/JsonPlacehoderApiTests.cs
             var postId = output[0].postId;
             var id = output[0].id;
             var name = output[0].name;
             var email = output[0].email;
             var body = output[0].body;
+=======
+
+            //use the data in output which is in a List of dictionary and assert the values and keys for the first returned object
+            var postId = output[0]["postId"];
+            var id = output[0]["id"];
+            var name = output[0]["name"];
+            var email = output[0]["email"];
+            var body = output[0]["body"];
+>>>>>>> 62fabd11ded61bc2c2664378c521dbac5120e80b:ApiTest/JsonPlacehoderApiTests.cs
 
 
             Assert.AreEqual(1, postId);
@@ -102,6 +115,8 @@ namespace Tests
             Assert.AreEqual("Eliseo@gardner.biz", email);
             Assert.AreEqual("laudantium enim quasi est quidem magnam voluptate ipsam eos\ntempora quo necessitatibus\ndolor quam autem quasi\nreiciendis et nam sapiente accusantium", body);
 
+
+            //check that the list of dictionary has exactly 1 count as we have specifically asked for a comments with a specific id 
             Assert.AreEqual(1, output.Count);
 
 
@@ -129,7 +144,6 @@ namespace Tests
 
 
             //assert that the size of output from response is as expected
-
             Assert.AreEqual(10, output.Count);
 
 
@@ -152,7 +166,7 @@ namespace Tests
             //Assert that expected http code matches the response http code 
             api.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);
 
-
+            //assert that the size of output from response is as expected
             Assert.AreEqual(5, output.Count);
 
         }
@@ -231,6 +245,7 @@ namespace Tests
             }
 
 
+            //check the fields and values for post with id=2 is correct
             var userId = output["userId"];
             var id = output["id"];
             var title = output["title"];
@@ -251,8 +266,13 @@ namespace Tests
             //set url using API helper
             Uri url = api.SetUrl("posts/");
 
+<<<<<<< HEAD:ApiTest/Tests/JsonPlacehoderApiTests.cs
             //get response back by calling API as a GET request
             var response = api.GetResponse(url, Method.POST);
+=======
+            //get response back by calling API as a POST request
+            var response = api.CreateRequest(url, Method.POST);
+>>>>>>> 62fabd11ded61bc2c2664378c521dbac5120e80b:ApiTest/JsonPlacehoderApiTests.cs
 
             //serialise the response content and put into a List of dictionary
             var output = api.SerialiseResponseToListOfDict(response);
@@ -273,8 +293,13 @@ namespace Tests
             //set url using API helper
             Uri url = api.SetUrl("posts/1");
 
+<<<<<<< HEAD:ApiTest/Tests/JsonPlacehoderApiTests.cs
             //get response back by calling API as a GET request
             var response = api.GetResponse(url, Method.PUT);
+=======
+            //get response back by calling API as a PUT request
+            var response = api.CreateRequest(url, Method.PUT);
+>>>>>>> 62fabd11ded61bc2c2664378c521dbac5120e80b:ApiTest/JsonPlacehoderApiTests.cs
 
             //serialise the response content and put into a List of dictionary
             var output = api.SerialiseResponseToListOfDict(response);
@@ -293,8 +318,13 @@ namespace Tests
             //set url using API helper
             Uri url = api.SetUrl("posts/1");
 
+<<<<<<< HEAD:ApiTest/Tests/JsonPlacehoderApiTests.cs
             //get response back by calling API as a GET request
             var response = api.GetResponse(url, Method.PATCH);
+=======
+            //get response back by calling API as a PATCH request
+            var response = api.CreateRequest(url, Method.PATCH);
+>>>>>>> 62fabd11ded61bc2c2664378c521dbac5120e80b:ApiTest/JsonPlacehoderApiTests.cs
 
             //serialise the response content and put into a List of dictionary
             var output = api.SerialiseResponseToListOfDict(response);
@@ -313,8 +343,13 @@ namespace Tests
             //set url using API helper
             Uri url = api.SetUrl("posts/1");
 
+<<<<<<< HEAD:ApiTest/Tests/JsonPlacehoderApiTests.cs
             //get response back by calling API as a GET request
             var response = api.GetResponse(url, Method.DELETE);
+=======
+            //get response back by calling API as a DELETE request
+            var response = api.CreateRequest(url, Method.DELETE);
+>>>>>>> 62fabd11ded61bc2c2664378c521dbac5120e80b:ApiTest/JsonPlacehoderApiTests.cs
 
             //serialise the response content and put into a List of dictionary
             var output = api.SerialiseResponseToListOfDict(response);
@@ -332,8 +367,13 @@ namespace Tests
             //set url using API helper
             Uri url = api.SetUrl("posts/1000");
 
+<<<<<<< HEAD:ApiTest/Tests/JsonPlacehoderApiTests.cs
             //get response back by calling API as a GET request
             var response = api.GetResponse(url, Method.DELETE);
+=======
+            //get response back by calling API as a DELETE request
+            var response = api.CreateRequest(url, Method.DELETE);
+>>>>>>> 62fabd11ded61bc2c2664378c521dbac5120e80b:ApiTest/JsonPlacehoderApiTests.cs
 
             //serialise the response content and put into a List of dictionary
             var output = api.SerialiseResponseToListOfDict(response);
@@ -385,13 +425,8 @@ namespace Tests
 
 
 
-        /// 
-        /// NEGATIVE TESTS
-        /// 
+        // Negative tests
 
-
-
-        // Negative test, return not found
         [Test]
         public void GetPostHttpsRequestResponseNotFound()
         {
@@ -427,8 +462,13 @@ namespace Tests
 
             Uri url = api.SetUrl("posts/1");
 
+<<<<<<< HEAD:ApiTest/Tests/JsonPlacehoderApiTests.cs
             //get response back by calling API as a GET request
             var response = api.GetResponse(url, Method.OPTIONS);
+=======
+            //get response back by calling API as a OPTIONS request
+            var response = api.CreateRequest(url, Method.OPTIONS);
+>>>>>>> 62fabd11ded61bc2c2664378c521dbac5120e80b:ApiTest/JsonPlacehoderApiTests.cs
 
             //Assert that expected http code matches the response http code 
             api.CheckHttpCodeResponse(HttpStatusCode.NoContent, response.StatusCode);
@@ -443,8 +483,13 @@ namespace Tests
             //set url using API helper
             Uri url = api.SetUrl("posts/2");
 
+<<<<<<< HEAD:ApiTest/Tests/JsonPlacehoderApiTests.cs
             //get response back by calling API as a GET request
             var response = api.GetResponse(url, Method.HEAD);
+=======
+            //get response back by calling API as a HEAD request
+            var response = api.CreateRequest(url, Method.HEAD);
+>>>>>>> 62fabd11ded61bc2c2664378c521dbac5120e80b:ApiTest/JsonPlacehoderApiTests.cs
 
             //Assert that expected http code matches the response http code 
             api.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);

@@ -33,15 +33,16 @@ namespace Tests
             Uri url = api.SetUrl("posts");
 
             //get response back by calling API as a GET request
-            var response = api.CreateRequest(url, Method.GET);
+            var response = api.GetPostResponse(url, Method.GET);
 
-            //serialise the response content and put into a List of dictionary
-            var output = api.SerialiseResponseToListOfDict(response);
+            //deserialise the response content and put into a List of Post object
+            var output = api.DeserialiseResponseToPost(response);
 
 
             //Assert that expected http code matches the response http code 
             api.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);
-
+            var responseInt = (int)response.StatusCode;
+            Assert.AreEqual(200, responseInt);
 
             //assert that the size of output from response is as expected
             Assert.AreEqual(100, output.Count);
@@ -56,10 +57,10 @@ namespace Tests
             Uri url = api.SetUrl("comments");
 
             //get response back by calling API as a GET request
-            var response = api.CreateRequest(url, Method.GET);
+            var response = api.GetResponse(url, Method.GET);
 
             //serialise the response content and put into a List of dictionary
-            var output = api.SerialiseResponseToListOfDict(response);
+            var output = api.DeserialiseResponseToComments(response);
 
 
             //Assert that expected http code matches the response http code 
@@ -79,24 +80,24 @@ namespace Tests
             Uri url = api.SetUrl("comments/1");
 
             //get response back by calling API as a GET request
-            var response = api.CreateRequest(url, Method.GET);
+            var response = api.GetResponse(url, Method.GET);
 
             //serialise the response content and put into a List of dictionary
-            var output = api.SerialiseResponseToListOfDict(response);
+            var output = api.DeserialiseResponseToComments(response);
 
 
             //Assert that expected http code matches the response http code 
             api.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);
 
-            var postId = output[0]["postId"];
-            var id = output[0]["id"];
-            var name = output[0]["name"];
-            var email = output[0]["email"];
-            var body = output[0]["body"];
+            var postId = output[0].postId;
+            var id = output[0].id;
+            var name = output[0].name;
+            var email = output[0].email;
+            var body = output[0].body;
 
 
-            Assert.AreEqual("1", postId);
-            Assert.AreEqual("1", id);
+            Assert.AreEqual(1, postId);
+            Assert.AreEqual(1, id);
             Assert.AreEqual("id labore ex et quam laborum", name);
             Assert.AreEqual("Eliseo@gardner.biz", email);
             Assert.AreEqual("laudantium enim quasi est quidem magnam voluptate ipsam eos\ntempora quo necessitatibus\ndolor quam autem quasi\nreiciendis et nam sapiente accusantium", body);
@@ -117,7 +118,7 @@ namespace Tests
             Uri url = api.SetUrl("posts?userId=1");
 
             //get response back by calling API as a GET request
-            var response = api.CreateRequest(url, Method.GET);
+            var response = api.GetResponse(url, Method.GET);
 
             //serialise the response content and put into a List of dictionary
             var output = api.SerialiseResponseToListOfDict(response);
@@ -142,7 +143,7 @@ namespace Tests
             Uri url = api.SetUrl("comments?postId=1");
 
             //get response back by calling API as a GET request
-            var response = api.CreateRequest(url, Method.GET);
+            var response = api.GetResponse(url, Method.GET);
 
             //serialise the response content and put into a List of dictionary
             var output = api.SerialiseResponseToListOfDict(response);
@@ -166,7 +167,7 @@ namespace Tests
             Uri url = api.SetUrl("posts/1/comments");
 
             //get response back by calling API as a GET request
-            var response = api.CreateRequest(url, Method.GET);
+            var response = api.GetResponse(url, Method.GET);
 
             //serialise the response content and put into a List of dictionary
             var output = api.SerialiseResponseToListOfDict(response);
@@ -210,7 +211,7 @@ namespace Tests
             Uri url = api.SetUrl("posts/2");
 
             //get response back by calling API as a GET request
-            var response = api.CreateRequest(url, Method.GET);
+            var response = api.GetResponse(url, Method.GET);
 
             //serialise the response content and put into a List of dictionary
             var output = api.SerialiseResponseToDictionary(response);
@@ -251,7 +252,7 @@ namespace Tests
             Uri url = api.SetUrl("posts/");
 
             //get response back by calling API as a GET request
-            var response = api.CreateRequest(url, Method.POST);
+            var response = api.GetResponse(url, Method.POST);
 
             //serialise the response content and put into a List of dictionary
             var output = api.SerialiseResponseToListOfDict(response);
@@ -273,7 +274,7 @@ namespace Tests
             Uri url = api.SetUrl("posts/1");
 
             //get response back by calling API as a GET request
-            var response = api.CreateRequest(url, Method.PUT);
+            var response = api.GetResponse(url, Method.PUT);
 
             //serialise the response content and put into a List of dictionary
             var output = api.SerialiseResponseToListOfDict(response);
@@ -293,7 +294,7 @@ namespace Tests
             Uri url = api.SetUrl("posts/1");
 
             //get response back by calling API as a GET request
-            var response = api.CreateRequest(url, Method.PATCH);
+            var response = api.GetResponse(url, Method.PATCH);
 
             //serialise the response content and put into a List of dictionary
             var output = api.SerialiseResponseToListOfDict(response);
@@ -313,7 +314,7 @@ namespace Tests
             Uri url = api.SetUrl("posts/1");
 
             //get response back by calling API as a GET request
-            var response = api.CreateRequest(url, Method.DELETE);
+            var response = api.GetResponse(url, Method.DELETE);
 
             //serialise the response content and put into a List of dictionary
             var output = api.SerialiseResponseToListOfDict(response);
@@ -332,7 +333,7 @@ namespace Tests
             Uri url = api.SetUrl("posts/1000");
 
             //get response back by calling API as a GET request
-            var response = api.CreateRequest(url, Method.DELETE);
+            var response = api.GetResponse(url, Method.DELETE);
 
             //serialise the response content and put into a List of dictionary
             var output = api.SerialiseResponseToListOfDict(response);
@@ -357,7 +358,7 @@ namespace Tests
             Uri url = apiHttp.SetUrl("posts/2");
 
             //get response back by calling API as a GET request
-            var response = apiHttp.CreateRequest(url, Method.GET);
+            var response = apiHttp.GetResponse(url, Method.GET);
 
             //serialise the response content and put into a List of dictionary
             var output = apiHttp.SerialiseResponseToDictionary(response);
@@ -399,7 +400,7 @@ namespace Tests
             Uri url = api.SetUrl("posts/-1");
 
             //get response back by calling API as a GET request
-            var response = api.CreateRequest(url, Method.GET);
+            var response = api.GetResponse(url, Method.GET);
 
             //Assert that expected http code matches the response http code 
             api.CheckHttpCodeResponse(HttpStatusCode.NotFound, response.StatusCode);
@@ -413,7 +414,7 @@ namespace Tests
             Uri url = api.SetUrl("pos/1");
 
             //get response back by calling API as a GET request
-            var response = api.CreateRequest(url, Method.GET);
+            var response = api.GetResponse(url, Method.GET);
 
             //Assert that expected http code matches the response http code 
             api.CheckHttpCodeResponse(HttpStatusCode.NotFound, response.StatusCode);
@@ -427,7 +428,7 @@ namespace Tests
             Uri url = api.SetUrl("posts/1");
 
             //get response back by calling API as a GET request
-            var response = api.CreateRequest(url, Method.OPTIONS);
+            var response = api.GetResponse(url, Method.OPTIONS);
 
             //Assert that expected http code matches the response http code 
             api.CheckHttpCodeResponse(HttpStatusCode.NoContent, response.StatusCode);
@@ -443,7 +444,7 @@ namespace Tests
             Uri url = api.SetUrl("posts/2");
 
             //get response back by calling API as a GET request
-            var response = api.CreateRequest(url, Method.HEAD);
+            var response = api.GetResponse(url, Method.HEAD);
 
             //Assert that expected http code matches the response http code 
             api.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);

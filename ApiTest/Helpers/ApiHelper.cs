@@ -36,7 +36,7 @@ namespace ApiTest
         {
             var client = new RestClient(url);
             var request = new RestRequest(method);
-            var config = new ClientConfig();
+            // var config = new ClientConfig();
 
 
             request.AddHeader("Accept", "application/json");
@@ -69,6 +69,20 @@ namespace ApiTest
 
         }
 
+
+
+        public T DeserialiseResponse<T>(IRestResponse response)
+        {
+            var deserialiser = new JsonDeserializer();
+            var output = deserialiser.Deserialize<T>(response);
+
+            return output;
+
+        }
+
+
+        /*
+
         public List<Dictionary<string, string>> SerialiseResponseToListOfDict(IRestResponse response)
         {
             var deserialiser = new JsonDeserializer();
@@ -87,6 +101,7 @@ namespace ApiTest
 
         }
 
+
         public List<PostsObject> DeserialiseResponseToPost(IRestResponse response)
         {
             var deserialiser = new JsonDeserializer();
@@ -96,6 +111,8 @@ namespace ApiTest
 
         }
 
+   
+
         public Dictionary<string, string> SerialiseResponseToDictionary(IRestResponse response)
         {
             var deserialiser = new JsonDeserializer();
@@ -104,6 +121,7 @@ namespace ApiTest
             return output;
 
         }
+             */
 
 
         public void CheckHttpCodeResponse(HttpStatusCode expectedCode, HttpStatusCode actualCode)

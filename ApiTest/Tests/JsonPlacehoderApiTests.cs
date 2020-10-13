@@ -11,7 +11,6 @@ namespace Tests
 {
     public class JsonPlacehoderApiTests
     {
-        string endpoint;
         ApiHelper api = new ApiHelper(new Uri("https://jsonplaceholder.typicode.com/"));
 
 
@@ -31,10 +30,10 @@ namespace Tests
             Uri url = api.SetUrl("posts");
 
             //get response back by calling API as a GET request
-            var response = api.GetPostResponse(url, Method.GET);
+            var response = api.GetResponse(url, Method.GET);
 
             //deserialise the response content and put into a List of Post object
-            var output = api.DeserialiseResponseToPost(response);
+            var output = api.DeserialiseResponse<List<PostsObject>>(response);
 
 
             //Assert that expected http code matches the response http code 
@@ -58,7 +57,7 @@ namespace Tests
             var response = api.GetResponse(url, Method.GET);
 
             //serialise the response content and put into a List of dictionary
-            var output = api.DeserialiseResponseToComments(response);
+            var output = api.DeserialiseResponse<List<CommentsObject>>(response);
 
 
             //Assert that expected http code matches the response http code 
@@ -81,11 +80,12 @@ namespace Tests
             var response = api.GetResponse(url, Method.GET);
 
             //serialise the response content and put into a List of dictionary
-            var output = api.DeserialiseResponseToComments(response);
+            var output = api.DeserialiseResponse<List<CommentsObject>>(response);
 
 
             //Assert that expected http code matches the response http code 
             api.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);
+
 
             var postId = output[0].postId;
             var id = output[0].id;
@@ -119,7 +119,7 @@ namespace Tests
             var response = api.GetResponse(url, Method.GET);
 
             //serialise the response content and put into a List of dictionary
-            var output = api.SerialiseResponseToListOfDict(response);
+            var output = api.DeserialiseResponse<List<PostsObject>>(response);
 
 
             //Assert that expected http code matches the response http code 
@@ -144,7 +144,7 @@ namespace Tests
             var response = api.GetResponse(url, Method.GET);
 
             //serialise the response content and put into a List of dictionary
-            var output = api.SerialiseResponseToListOfDict(response);
+            var output = api.DeserialiseResponse<List<CommentsObject>>(response);
 
 
             //Assert that expected http code matches the response http code 
@@ -168,7 +168,7 @@ namespace Tests
             var response = api.GetResponse(url, Method.GET);
 
             //serialise the response content and put into a List of dictionary
-            var output = api.SerialiseResponseToListOfDict(response);
+            var output = api.DeserialiseResponse<List<CommentsObject>>(response);
 
 
             //Assert that expected http code matches the response http code 
@@ -180,16 +180,17 @@ namespace Tests
 
 
             //check the first results content i.e. postid=1 
-            var postId = output[0]["postId"];
-            var id = output[0]["id"];
-            var name = output[0]["name"];
-            var email = output[0]["email"];
-            var body = output[0]["body"];
+            var postId = output[0].postId;
+            var id = output[0].id;
+            var name = output[0].name;
+            var email = output[0].email;
+            var body = output[0].body;
+
 
 
             //Asserts of the content of the first result
-            Assert.AreEqual("1", postId);
-            Assert.AreEqual("1", id);
+            Assert.AreEqual(1, postId);
+            Assert.AreEqual(1, id);
             Assert.AreEqual("id labore ex et quam laborum", name);
             Assert.AreEqual("Eliseo@gardner.biz", email);
             Assert.AreEqual("laudantium enim quasi est quidem magnam voluptate ipsam eos\ntempora quo necessitatibus\ndolor quam autem quasi\nreiciendis et nam sapiente accusantium", body);
@@ -212,7 +213,7 @@ namespace Tests
             var response = api.GetResponse(url, Method.GET);
 
             //serialise the response content and put into a List of dictionary
-            var output = api.SerialiseResponseToDictionary(response);
+            var output = api.DeserialiseResponse<List<PostsObject>>(response);
 
 
             //Assert that expected http code matches the response http code 
@@ -229,13 +230,13 @@ namespace Tests
             }
 
 
-            var userId = output["userId"];
-            var id = output["id"];
-            var title = output["title"];
-            var body = output["body"];
+            var userId = output[0].userId;
+            var id = output[0].id;
+            var title = output[0].title;
+            var body = output[0].body;
 
-            Assert.AreEqual("1", userId);
-            Assert.AreEqual("2", id);
+            Assert.AreEqual(1, userId);
+            Assert.AreEqual(2, id);
             Assert.AreEqual("qui est esse", title);
             Assert.AreEqual("est rerum tempore vitae\nsequi sint nihil reprehenderit dolor beatae ea dolores neque\nfugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis\nqui aperiam non debitis possimus qui neque nisi nulla", body);
 
@@ -253,7 +254,7 @@ namespace Tests
             var response = api.GetResponse(url, Method.POST);
 
             //serialise the response content and put into a List of dictionary
-            var output = api.SerialiseResponseToListOfDict(response);
+            var output = api.DeserialiseResponse<List<PostsObject>>(response);
 
 
             //Assert that expected http code matches the response http code 
@@ -275,7 +276,7 @@ namespace Tests
             var response = api.GetResponse(url, Method.PUT);
 
             //serialise the response content and put into a List of dictionary
-            var output = api.SerialiseResponseToListOfDict(response);
+            var output = api.DeserialiseResponse<List<PostsObject>>(response);
 
 
             //Assert that expected http code matches the response http code 
@@ -295,7 +296,7 @@ namespace Tests
             var response = api.GetResponse(url, Method.PATCH);
 
             //serialise the response content and put into a List of dictionary
-            var output = api.SerialiseResponseToListOfDict(response);
+            var output = api.DeserialiseResponse<List<PostsObject>>(response);
 
 
             //Assert that expected http code matches the response http code 
@@ -315,7 +316,7 @@ namespace Tests
             var response = api.GetResponse(url, Method.DELETE);
 
             //serialise the response content and put into a List of dictionary
-            var output = api.SerialiseResponseToListOfDict(response);
+            var output = api.DeserialiseResponse<List<PostsObject>>(response);
 
 
             //Assert that expected http code matches the response http code 
@@ -334,7 +335,7 @@ namespace Tests
             var response = api.GetResponse(url, Method.DELETE);
 
             //serialise the response content and put into a List of dictionary
-            var output = api.SerialiseResponseToListOfDict(response);
+            var output = api.DeserialiseResponse<List<PostsObject>>(response);
 
 
             //Assert that expected http code matches the response http code 
@@ -359,20 +360,21 @@ namespace Tests
             var response = apiHttp.GetResponse(url, Method.GET);
 
             //serialise the response content and put into a List of dictionary
-            var output = apiHttp.SerialiseResponseToDictionary(response);
+            var output = apiHttp.DeserialiseResponse<List<PostsObject>>(response);
 
 
             //Assert that expected http code matches the response http code 
             apiHttp.CheckHttpCodeResponse(HttpStatusCode.OK, response.StatusCode);
 
             //check the posts/2 returned values
-            var userId = output["userId"];
-            var id = output["id"];
-            var title = output["title"];
-            var body = output["body"];
+            var userId = output[0].userId;
+            var id = output[0].id;
+            var title = output[0].title;
+            var body = output[0].body;
 
-            Assert.AreEqual("1", userId);
-            Assert.AreEqual("2", id);
+
+            Assert.AreEqual(1, userId);
+            Assert.AreEqual(2, id);
             Assert.AreEqual("qui est esse", title);
             Assert.AreEqual("est rerum tempore vitae\nsequi sint nihil reprehenderit dolor beatae ea dolores neque\nfugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis\nqui aperiam non debitis possimus qui neque nisi nulla", body);
 

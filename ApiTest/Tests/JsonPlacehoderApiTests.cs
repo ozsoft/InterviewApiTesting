@@ -19,13 +19,13 @@ namespace Tests
         {
 
         }
-        sd
-       //test
-       //jenkins 
 
-       //Happy paths, positive tests
+        //test
+        //jenkins 
 
-       [Test]
+        //Happy paths, positive tests
+
+        [Test]
         public void GetAllPostsHttpsRequestResponseOk()
         {
             //set url using API helper

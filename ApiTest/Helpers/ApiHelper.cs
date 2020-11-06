@@ -47,8 +47,6 @@ namespace ApiTest
             //anonymous body
             request.AddJsonBody(new { name = "Ozgur" });
             
-             //
-            //
              */
 
 

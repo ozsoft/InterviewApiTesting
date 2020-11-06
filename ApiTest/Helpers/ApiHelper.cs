@@ -37,7 +37,7 @@ namespace ApiTest
             var client = new RestClient(url);
             var request = new RestRequest(method);
             // var config = new ClientConfig();
-
+            //
 
             request.AddHeader("Accept", "application/json");
 

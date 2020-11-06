@@ -21,7 +21,6 @@ namespace Tests
         }
 
         //test
-        //jenkins 
 
         //Happy paths, positive tests
 
